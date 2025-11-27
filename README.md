@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# HelpFit
 
-## Getting Started
+Bem-vindo ao **HelpFit**, uma plataforma completa para Personal Trainers gerenciarem seus alunos, avaliações físicas e planos de treino.
 
-First, run the development server:
+## Visão Geral
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+O HelpFit foi desenvolvido para facilitar a comunicação e o acompanhamento entre treinadores e seus alunos. A plataforma oferece duas experiências distintas: uma para o **Professor (Personal Trainer)** e outra para o **Usuário Comum (Aluno)**.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Casos de Uso
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 1. Professor (Personal Trainer)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O Professor tem acesso a um painel administrativo completo para gerenciar seus alunos.
 
-## Learn More
+*   **Dashboard**: Visão geral dos alunos e atividades recentes.
+*   **Gestão de Alunos**:
+    *   **Cadastrar Alunos**: Adicionar novos alunos ao sistema.
+    *   **Listar Alunos**: Visualizar todos os alunos vinculados.
+    *   **Perfil do Aluno**: Acessar detalhes específicos de cada aluno.
+*   **Avaliações Físicas**:
+    *   **Criar Avaliação**: Registrar dados antropométricos (peso, altura, dobras cutâneas) para calcular o percentual de gordura e acompanhar o progresso.
+    *   **Histórico**: Visualizar a evolução física do aluno ao longo do tempo.
+*   **Planos de Treino**:
+    *   **Criar Treino**: Prescrever treinos personalizados para os alunos.
+    *   **Gerenciar Treinos**: Editar ou atualizar rotinas de exercícios.
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Usuário Comum (Aluno)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+O Aluno tem acesso a uma área exclusiva para acompanhar seu desenvolvimento e acessar seus treinos.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+*   **Dashboard**: Visão rápida do seu progresso e treinos atuais.
+*   **Meus Treinos**: Acesso fácil aos planos de treino prescritos pelo professor, com detalhes dos exercícios.
+*   **Minhas Avaliações**: Visualização dos resultados das avaliações físicas, permitindo acompanhar a evolução da composição corporal e medidas.
 
-## Deploy on Vercel
+## Tecnologias Utilizadas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+*   **Frontend**: Next.js, React, Tailwind CSS
+*   **Backend**: Next.js API Routes
+*   **Banco de Dados**: SQLite (com Prisma ORM)
+*   **Autenticação**: NextAuth.js
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Como Rodar o Projeto
+
+1.  Instale as dependências:
+    ```bash
+    npm install
+    ```
+
+2.  Configure o banco de dados:
+    ```bash
+    npx prisma migrate dev
+    npx prisma db seed
+    ```
+
+3.  Inicie o servidor de desenvolvimento:
+    ```bash
+    npm run dev
+    ```
+
+4.  Acesse `http://localhost:3000` no seu navegador.
