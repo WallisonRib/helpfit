@@ -105,7 +105,7 @@ export async function createAssessment(studentId: string, prevState: State, form
   }
 
   const data = validatedFields.data;
-  
+
   // Pollock 7-site Skinfold Method for Body Density (Jackson & Pollock)
   // For Men: BD = 1.112 - 0.00043499(Sum) + 0.00000055(Sum)^2 - 0.00028826(Age)
   // For Women: BD = 1.097 - 0.00046971(Sum) + 0.00000056(Sum)^2 - 0.00012828(Age)
@@ -113,10 +113,10 @@ export async function createAssessment(studentId: string, prevState: State, form
   // For this MVP, I'll use a simplified formula or assume Male/30y for calculation demo if age is missing.
   // Let's assume Male for now as per typical MVP simplification, or better, just sum them up for now.
   // Actually, let's implement a basic calculation assuming Male, 25 years old for now to show "real" numbers.
-  
+
   const sum = data.chest + data.abdominal + data.thigh + data.tricep + data.subscapular + data.suprailiac + data.midaxillary;
   const age = 25; // Default
-  
+
   const bodyDensity = 1.112 - (0.00043499 * sum) + (0.00000055 * sum * sum) - (0.00028826 * age);
   const bodyFatPercentage = ((4.95 / bodyDensity) - 4.50) * 100;
 
@@ -255,25 +255,25 @@ export async function upsertWorkout(studentId: string, day: string, prevState: S
   try {
     // Check if workout exists for this student and day
     const existingWorkout = await prisma.workout.findFirst({
-        where: {
-            studentId: studentId,
-            title: title
-        }
+      where: {
+        studentId: studentId,
+        title: title
+      }
     });
 
     if (existingWorkout) {
-        await prisma.workout.update({
-            where: { id: existingWorkout.id },
-            data: { content }
-        });
+      await prisma.workout.update({
+        where: { id: existingWorkout.id },
+        data: { content }
+      });
     } else {
-        await prisma.workout.create({
-            data: {
-                studentId,
-                title,
-                content,
-            },
-        });
+      await prisma.workout.create({
+        data: {
+          studentId,
+          title,
+          content,
+        },
+      });
     }
   } catch (error) {
     return {
@@ -314,22 +314,104 @@ export async function logWorkout(studentId: string, workoutId: string) {
 
 
 export async function authenticate(
-  prevState: string | undefined,
+  prevState: State | undefined,
   formData: FormData,
-): Promise<string | undefined> {
+): Promise<State> {
   try {
     console.log('Attempting login...');
     const result = await signIn('credentials', { ...Object.fromEntries(formData), redirectTo: '/dashboard' });
     console.log('Login result:', result);
-    return undefined;
+    return { message: null, errors: {} };
   } catch (error) {
     console.error('Login error:', error);
     if (error instanceof AuthError) {
       switch (error.type) {
         case 'CredentialsSignin':
-          return 'Credenciais inválidas.';
+          return { message: 'Credenciais inválidas.', errors: {} };
         default:
-          return 'Algo deu errado.';
+          return { message: 'Algo deu errado.', errors: {} };
+      }
+    }
+    throw error;
+  }
+}
+
+export async function socialLogin(provider: string) {
+  await signIn(provider, { redirectTo: '/dashboard' });
+}
+
+const RegisterSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  email: z.string().email('Email inválido'),
+  password: z.string().min(6, 'A senha deve ter pelo menos 6 caracteres'),
+  phone: z.string().optional(),
+  cref: z.string().optional(),
+  role: z.enum(['TRAINER', 'STUDENT']),
+});
+
+export async function register(
+  prevState: State | undefined,
+  formData: FormData,
+): Promise<State> {
+  const userType = formData.get('userType');
+  const derivedRole = userType === 'personal' ? 'TRAINER' : 'STUDENT';
+
+  console.log('Registering user:', {
+    name: formData.get('name'),
+    email: formData.get('email'),
+    userType,
+    derivedRole,
+    phone: formData.get('phone'),
+    cref: formData.get('cref')
+  });
+
+  const validatedFields = RegisterSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    phone: formData.get('phone') || undefined,
+    cref: formData.get('cref') || undefined,
+    role: derivedRole,
+  });
+
+  if (!validatedFields.success) {
+    console.error('Validation failed:', validatedFields.error.flatten().fieldErrors);
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Dados inválidos. Verifique os campos abaixo.',
+    };
+  }
+
+  const { name, email, password, phone, cref, role } = validatedFields.data;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        cref,
+        role,
+      },
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return { message: 'Falha ao criar conta. Email já pode estar em uso.', errors: {} };
+  }
+
+  // After registration, log the user in
+  try {
+    await signIn('credentials', { email, password, redirectTo: '/dashboard' });
+    return { message: null, errors: {} };
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case 'CredentialsSignin':
+          return { message: 'Erro ao fazer login automático.', errors: {} };
+        default:
+          return { message: 'Algo deu errado.', errors: {} };
       }
     }
     throw error;
