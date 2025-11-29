@@ -67,7 +67,79 @@ export async function createStudent(prevState: State, formData: FormData): Promi
   redirect('/trainer');
 }
 
-const AssessmentSchema = z.object({
+const UpdateProfileSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  email: z.string().email('Email inválido'),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  age: z.coerce.number().optional(),
+  height: z.coerce.number().optional(),
+  weight: z.coerce.number().optional(),
+  trainingLocation: z.string().optional(),
+});
+
+export async function updateProfile(prevState: State | undefined, formData: FormData): Promise<State> {
+  const validatedFields = UpdateProfileSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    phone: formData.get('phone'),
+    address: formData.get('address'),
+    age: formData.get('age'),
+    height: formData.get('height'),
+    weight: formData.get('weight'),
+    trainingLocation: formData.get('trainingLocation'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Campos inválidos. Verifique os dados.',
+    };
+  }
+
+  const { name, email, phone, address, age, height, weight, trainingLocation } = validatedFields.data;
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    return { message: 'Não autenticado', errors: {} };
+  }
+
+  try {
+    // Check if email is being changed and if it's already taken
+    if (email !== session.user.email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingUser) {
+        return {
+          errors: { email: ['Este email já está em uso.'] },
+          message: 'Erro ao atualizar perfil.',
+        };
+      }
+    }
+
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: {
+        name,
+        email,
+        phone,
+        address,
+        age,
+        height,
+        weight,
+        trainingLocation,
+      },
+    });
+
+    revalidatePath('/dashboard/profile');
+    revalidatePath('/trainer/profile');
+    return { message: 'Perfil atualizado com sucesso!', errors: {} };
+  } catch (error) {
+    console.error('Update profile error:', error);
+    return { message: 'Erro ao atualizar perfil.', errors: {} };
+  }
+} const AssessmentSchema = z.object({
   weight: z.coerce.number().min(1),
   height: z.coerce.number().min(1),
   chest: z.coerce.number().min(0),
@@ -386,6 +458,16 @@ export async function register(
   const hashedPassword = await bcrypt.hash(password, 10);
 
   try {
+    // Check if CREF is already in use if provided
+    if (cref) {
+      const existingCref = await prisma.user.findUnique({
+        where: { cref },
+      });
+      if (existingCref) {
+        return { message: 'Este CREF já está em uso.', errors: { cref: ['CREF já cadastrado.'] } };
+      }
+    }
+
     await prisma.user.create({
       data: {
         name,
@@ -512,72 +594,4 @@ export async function addStudentToTrainer(studentId: string) {
   redirect('/trainer');
 }
 
-const UpdateProfileSchema = z.object({
-  name: z.string().min(1, 'Nome é obrigatório'),
-  email: z.string().email('Email inválido'),
-  phone: z.string().optional(),
-  address: z.string().optional(),
-  age: z.coerce.number().optional(),
-  trainingLocation: z.string().optional(),
-});
 
-export async function updateProfile(prevState: State | undefined, formData: FormData): Promise<State> {
-  const session = await auth();
-  if (!session?.user?.email) {
-    return { message: 'Unauthorized', errors: {} };
-  }
-
-  const validatedFields = UpdateProfileSchema.safeParse({
-    name: formData.get('name'),
-    email: formData.get('email'),
-    phone: formData.get('phone'),
-    address: formData.get('address'),
-    age: formData.get('age'),
-    trainingLocation: formData.get('trainingLocation'),
-  });
-
-  if (!validatedFields.success) {
-    return {
-      errors: validatedFields.error.flatten().fieldErrors,
-      message: 'Dados inválidos.',
-    };
-  }
-
-  const { name, email, phone, address, age, trainingLocation } = validatedFields.data;
-
-  try {
-    // Check if email is being changed and if it's already taken
-    if (email !== session.user.email) {
-      const existingUser = await prisma.user.findUnique({
-        where: { email },
-      });
-      if (existingUser) {
-        return {
-          errors: { email: ['Este email já está em uso.'] },
-          message: 'Erro ao atualizar perfil.',
-        };
-      }
-    }
-
-    await prisma.user.update({
-      where: { email: session.user.email },
-      data: {
-        name,
-        email,
-        phone,
-        address,
-        age,
-        trainingLocation,
-      },
-    });
-
-    revalidatePath('/dashboard/profile');
-    revalidatePath('/trainer/profile');
-    return { message: 'Perfil atualizado com sucesso!', errors: {} };
-  } catch (error) {
-    return {
-      message: 'Erro no banco de dados: Falha ao atualizar perfil.',
-      errors: {},
-    };
-  }
-}

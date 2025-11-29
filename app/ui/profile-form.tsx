@@ -14,6 +14,13 @@ export default function ProfileForm({ user, latestAssessment }: ProfileFormProps
     const [success, setSuccess] = useState(false);
     const [phone, setPhone] = useState(user.phone || '');
 
+    // Initialize phone mask on mount
+    useEffect(() => {
+        if (user.phone) {
+            applyPhoneMask(user.phone);
+        }
+    }, [user.phone]);
+
     useEffect(() => {
         if (state.message === 'Perfil atualizado com sucesso!') {
             setSuccess(true);
@@ -22,8 +29,8 @@ export default function ProfileForm({ user, latestAssessment }: ProfileFormProps
         }
     }, [state]);
 
-    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        let value = e.target.value.replace(/\D/g, '');
+    const applyPhoneMask = (rawValue: string) => {
+        let value = rawValue.replace(/\D/g, '');
         if (value.length > 11) value = value.slice(0, 11);
 
         if (value.length > 10) {
@@ -36,6 +43,10 @@ export default function ProfileForm({ user, latestAssessment }: ProfileFormProps
             value = value.replace(/^(\d*)/, '($1');
         }
         setPhone(value);
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        applyPhoneMask(e.target.value);
     };
 
     return (
@@ -52,7 +63,7 @@ export default function ProfileForm({ user, latestAssessment }: ProfileFormProps
                 </div>
             </div>
 
-            <form action={dispatch} className="space-y-4">
+            <form action={dispatch} className="space-y-4" key={user.updatedAt}>
                 <div>
                     <label className="block text-sm font-medium text-primary mb-1">Nome</label>
                     <input
@@ -112,23 +123,45 @@ export default function ProfileForm({ user, latestAssessment }: ProfileFormProps
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-primary mb-1">Altura (m)</label>
-                        <input
-                            type="text"
-                            defaultValue={latestAssessment?.height ? (latestAssessment.height / 100).toFixed(2) : ''}
-                            className="w-full bg-zinc-800 border-none rounded-lg p-3 text-center text-white placeholder-zinc-500 cursor-not-allowed opacity-70"
-                            readOnly
-                            title="Atualizado via Avaliação"
-                        />
+                        {user.role === 'TRAINER' ? (
+                            <input
+                                name="height"
+                                type="number"
+                                step="0.01"
+                                defaultValue={user.height ?? ''}
+                                placeholder="1.75"
+                                className="w-full bg-zinc-800 border-none rounded-lg p-3 text-center text-white placeholder-zinc-500 focus:ring-2 focus:ring-primary"
+                            />
+                        ) : (
+                            <input
+                                type="text"
+                                defaultValue={latestAssessment?.height ? (latestAssessment.height / 100).toFixed(2) : ''}
+                                className="w-full bg-zinc-800 border-none rounded-lg p-3 text-center text-white placeholder-zinc-500 cursor-not-allowed opacity-70"
+                                readOnly
+                                title="Atualizado via Avaliação"
+                            />
+                        )}
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-primary mb-1">Peso (kg)</label>
-                        <input
-                            type="text"
-                            defaultValue={latestAssessment?.weight || ''}
-                            className="w-full bg-zinc-800 border-none rounded-lg p-3 text-center text-white placeholder-zinc-500 cursor-not-allowed opacity-70"
-                            readOnly
-                            title="Atualizado via Avaliação"
-                        />
+                        {user.role === 'TRAINER' ? (
+                            <input
+                                name="weight"
+                                type="number"
+                                step="0.1"
+                                defaultValue={user.weight ?? ''}
+                                placeholder="70.5"
+                                className="w-full bg-zinc-800 border-none rounded-lg p-3 text-center text-white placeholder-zinc-500 focus:ring-2 focus:ring-primary"
+                            />
+                        ) : (
+                            <input
+                                type="text"
+                                defaultValue={latestAssessment?.weight || ''}
+                                className="w-full bg-zinc-800 border-none rounded-lg p-3 text-center text-white placeholder-zinc-500 cursor-not-allowed opacity-70"
+                                readOnly
+                                title="Atualizado via Avaliação"
+                            />
+                        )}
                     </div>
                 </div>
 

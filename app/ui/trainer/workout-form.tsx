@@ -10,6 +10,7 @@ interface Exercise {
     name: string;
     sets: string;
     reps: string;
+    mediaUrl?: string;
 }
 
 export default function WorkoutForm({ studentId, day, initialData }: { studentId: string, day: string, initialData?: Exercise[] }) {
@@ -17,10 +18,10 @@ export default function WorkoutForm({ studentId, day, initialData }: { studentId
     const upsertWorkoutWithIdAndDay = upsertWorkout.bind(null, studentId, day);
     const [state, dispatch, isPending] = useActionState(upsertWorkoutWithIdAndDay, initialState);
 
-    const [exercises, setExercises] = useState<Exercise[]>(initialData || [{ name: '', sets: '', reps: '' }]);
+    const [exercises, setExercises] = useState<Exercise[]>(initialData || [{ name: '', sets: '', reps: '', mediaUrl: '' }]);
 
     const addExercise = () => {
-        setExercises([...exercises, { name: '', sets: '', reps: '' }]);
+        setExercises([...exercises, { name: '', sets: '', reps: '', mediaUrl: '' }]);
     };
 
     const removeExercise = (index: number) => {
@@ -43,11 +44,11 @@ export default function WorkoutForm({ studentId, day, initialData }: { studentId
                         <button
                             type="button"
                             onClick={() => setExercises([
-                                { name: 'Supino Reto', sets: '3', reps: '10' },
-                                { name: 'Supino Inclinado', sets: '3', reps: '10' },
-                                { name: 'Crucifixo', sets: '3', reps: '12' },
-                                { name: 'Tríceps Testa', sets: '3', reps: '12' },
-                                { name: 'Tríceps Corda', sets: '3', reps: '15' },
+                                { name: 'Supino Reto', sets: '3', reps: '10', mediaUrl: '' },
+                                { name: 'Supino Inclinado', sets: '3', reps: '10', mediaUrl: '' },
+                                { name: 'Crucifixo', sets: '3', reps: '12', mediaUrl: '' },
+                                { name: 'Tríceps Testa', sets: '3', reps: '12', mediaUrl: '' },
+                                { name: 'Tríceps Corda', sets: '3', reps: '15', mediaUrl: '' },
                             ])}
                             className="whitespace-nowrap rounded-full bg-zinc-800 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-700 transition-colors border border-zinc-700"
                         >
@@ -56,11 +57,11 @@ export default function WorkoutForm({ studentId, day, initialData }: { studentId
                         <button
                             type="button"
                             onClick={() => setExercises([
-                                { name: 'Agachamento Livre', sets: '4', reps: '8' },
-                                { name: 'Leg Press', sets: '3', reps: '10' },
-                                { name: 'Cadeira Extensora', sets: '3', reps: '15' },
-                                { name: 'Stiff', sets: '3', reps: '10' },
-                                { name: 'Panturrilha', sets: '4', reps: '15' },
+                                { name: 'Agachamento Livre', sets: '4', reps: '8', mediaUrl: '' },
+                                { name: 'Leg Press', sets: '3', reps: '10', mediaUrl: '' },
+                                { name: 'Cadeira Extensora', sets: '3', reps: '15', mediaUrl: '' },
+                                { name: 'Stiff', sets: '3', reps: '10', mediaUrl: '' },
+                                { name: 'Panturrilha', sets: '4', reps: '15', mediaUrl: '' },
                             ])}
                             className="whitespace-nowrap rounded-full bg-zinc-800 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-700 transition-colors border border-zinc-700"
                         >
@@ -69,11 +70,11 @@ export default function WorkoutForm({ studentId, day, initialData }: { studentId
                         <button
                             type="button"
                             onClick={() => setExercises([
-                                { name: 'Puxada Alta', sets: '4', reps: '10' },
-                                { name: 'Remada Curvada', sets: '3', reps: '10' },
-                                { name: 'Serrote', sets: '3', reps: '12' },
-                                { name: 'Rosca Direta', sets: '3', reps: '12' },
-                                { name: 'Rosca Martelo', sets: '3', reps: '12' },
+                                { name: 'Puxada Alta', sets: '4', reps: '10', mediaUrl: '' },
+                                { name: 'Remada Curvada', sets: '3', reps: '10', mediaUrl: '' },
+                                { name: 'Serrote', sets: '3', reps: '12', mediaUrl: '' },
+                                { name: 'Rosca Direta', sets: '3', reps: '12', mediaUrl: '' },
+                                { name: 'Rosca Martelo', sets: '3', reps: '12', mediaUrl: '' },
                             ])}
                             className="whitespace-nowrap rounded-full bg-zinc-800 px-4 py-2 text-xs font-medium text-white hover:bg-zinc-700 transition-colors border border-zinc-700"
                         >
@@ -92,50 +93,61 @@ export default function WorkoutForm({ studentId, day, initialData }: { studentId
                         </button>
                     </div>
 
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                         {exercises.map((exercise, index) => (
-                            <div key={index} className="flex gap-2 items-start group">
-                                <div className="flex-grow grid grid-cols-12 gap-2">
-                                    <div className="col-span-6">
-                                        <input
-                                            type="text"
-                                            placeholder="Nome do Exercício"
-                                            className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2 px-3 text-sm text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                                            value={exercise.name}
-                                            onChange={(e) => handleExerciseChange(index, 'name', e.target.value)}
-                                            required
-                                        />
+                            <div key={index} className="flex flex-col gap-2 p-4 bg-zinc-800/50 rounded-xl border border-zinc-700/50 group">
+                                <div className="flex gap-2 items-start">
+                                    <div className="flex-grow grid grid-cols-12 gap-2">
+                                        <div className="col-span-6">
+                                            <input
+                                                type="text"
+                                                placeholder="Nome do Exercício"
+                                                className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2 px-3 text-sm text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                value={exercise.name}
+                                                onChange={(e) => handleExerciseChange(index, 'name', e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="col-span-3">
+                                            <input
+                                                type="text"
+                                                placeholder="Séries"
+                                                className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2 px-3 text-sm text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                value={exercise.sets}
+                                                onChange={(e) => handleExerciseChange(index, 'sets', e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="col-span-3">
+                                            <input
+                                                type="text"
+                                                placeholder="Reps"
+                                                className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2 px-3 text-sm text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                                value={exercise.reps}
+                                                onChange={(e) => handleExerciseChange(index, 'reps', e.target.value)}
+                                                required
+                                            />
+                                        </div>
                                     </div>
-                                    <div className="col-span-3">
-                                        <input
-                                            type="text"
-                                            placeholder="Séries"
-                                            className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2 px-3 text-sm text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                                            value={exercise.sets}
-                                            onChange={(e) => handleExerciseChange(index, 'sets', e.target.value)}
-                                            required
-                                        />
-                                    </div>
-                                    <div className="col-span-3">
-                                        <input
-                                            type="text"
-                                            placeholder="Reps"
-                                            className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2 px-3 text-sm text-white placeholder:text-zinc-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                                            value={exercise.reps}
-                                            onChange={(e) => handleExerciseChange(index, 'reps', e.target.value)}
-                                            required
-                                        />
-                                    </div>
+                                    {exercises.length > 1 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => removeExercise(index)}
+                                            className="p-2 text-zinc-500 hover:text-red-500 transition-colors"
+                                        >
+                                            <TrashIcon className="h-5 w-5" />
+                                        </button>
+                                    )}
                                 </div>
-                                {exercises.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => removeExercise(index)}
-                                        className="p-2 text-zinc-500 hover:text-red-500 transition-colors"
-                                    >
-                                        <TrashIcon className="h-5 w-5" />
-                                    </button>
-                                )}
+                                <div className="w-full">
+                                    <input
+                                        type="text"
+                                        placeholder="URL da Imagem ou Vídeo (opcional)"
+                                        className="block w-full rounded-lg border border-zinc-700 bg-zinc-800 py-2 px-3 text-xs text-zinc-300 placeholder:text-zinc-600 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                                        value={exercise.mediaUrl || ''}
+                                        onChange={(e) => handleExerciseChange(index, 'mediaUrl', e.target.value)}
+                                    />
+                                </div>
                             </div>
                         ))}
                     </div>

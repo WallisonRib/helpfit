@@ -5,6 +5,7 @@ import { BackButton } from '@/components/BackButton';
 import { Dumbbell, Plus, Calendar } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import { DeleteWorkoutButton } from '@/app/ui/DeleteWorkoutButton';
+import StudentReportButton from '@/app/ui/trainer/student-report-button';
 
 const DAYS_OF_WEEK = [
     "Segunda-Feira",
@@ -34,13 +35,16 @@ export default async function StudentDetailsPage({ params }: { params: Promise<{
             <BackButton href="/trainer" />
             <div className="flex w-full items-center justify-between">
                 <h1 className="text-3xl font-bold">{student.name}</h1>
-                <Link
-                    href={`/trainer/students/${student.id}/assessments/new`}
-                    className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
-                >
-                    <Plus className="w-5 h-5" />
-                    Nova Avaliação
-                </Link>
+                <div className="flex gap-2">
+                    <StudentReportButton student={student} assessments={student.assessments} />
+                    <Link
+                        href={`/trainer/students/${student.id}/assessments/new`}
+                        className="flex items-center gap-2 bg-primary text-black px-4 py-2 rounded-lg font-medium hover:bg-primary/90 transition-colors"
+                    >
+                        <Plus className="w-5 h-5" />
+                        Nova Avaliação
+                    </Link>
+                </div>
             </div>
 
             {/* Weekly Schedule Grid */}

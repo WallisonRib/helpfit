@@ -4,6 +4,8 @@ import { PlusIcon, UserGroupIcon, ClipboardDocumentCheckIcon, FireIcon } from '@
 
 
 
+import { TrainingTimeline } from '@/app/ui/trainer/training-timeline';
+
 export default async function TrainerDashboard() {
     const stats = await getTrainerStats();
 
@@ -40,6 +42,11 @@ export default async function TrainerDashboard() {
                         <p className="text-2xl font-bold text-white">{stats?.workoutsCompletedToday || 0}</p>
                     </div>
                 </div>
+            </div>
+
+            {/* Timeline */}
+            <div className="mb-8">
+                <TrainingTimeline />
             </div>
         </div>
     );

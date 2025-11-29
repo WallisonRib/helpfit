@@ -16,9 +16,11 @@ model User {
   email     String   @unique
   password  String
   phone     String?
-  cref      String?
+  cref      String?  @unique
   address   String?
   age       Int?
+  height    Float?
+  weight    Float?
   trainingLocation String?
   role      String   // "TRAINER" or "STUDENT"
   createdAt DateTime @default(now())

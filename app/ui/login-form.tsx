@@ -145,6 +145,7 @@ export default function LoginForm({
             <form action={dispatch}>
                 <div className="flex-1 px-6 pt-8">
                     <div className="w-full space-y-4">
+                        <input type="hidden" name="userType" value={userType ? 'personal' : 'student'} />
                         {mode === 'signup' && (
                             <div>
                                 <label
