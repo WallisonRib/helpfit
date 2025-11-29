@@ -60,7 +60,7 @@ export function Sidebar({ role }: SidebarProps) {
             <div className="mt-auto w-full px-2">
                 <button
                     onClick={() => logout()}
-                    className="flex flex-col items-center justify-center p-3 rounded-xl transition-all group w-full text-zinc-400 hover:bg-zinc-800 hover:text-red-500"
+                    className="flex flex-col items-center justify-center p-3 rounded-xl transition-all group w-full text-zinc-400 hover:bg-zinc-800 hover:text-red-500 cursor-pointer"
                 >
                     <LogOut className="w-6 h-6 mb-1 stroke-[2px]" />
                     <span className="text-[10px] font-medium">Sair</span>

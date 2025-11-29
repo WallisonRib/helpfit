@@ -72,7 +72,7 @@ function FaqItem({ question, answer }: { question: string, answer: string }) {
         <div className="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
             <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="w-full flex items-center justify-between p-4 text-left hover:bg-zinc-800/50 transition-colors"
+                className="w-full flex items-center justify-between p-4 text-left hover:bg-zinc-800/50 transition-colors cursor-pointer"
             >
                 <span className="font-medium text-zinc-200">{question}</span>
                 {isOpen ? <ChevronUp className="w-5 h-5 text-primary" /> : <ChevronDown className="w-5 h-5 text-zinc-500" />}

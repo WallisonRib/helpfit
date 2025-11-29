@@ -22,6 +22,8 @@ function AuthLayoutContent({ mode, title, linkText, linkUrl, linkLabel }: AuthLa
     // Initialize from URL or default to false (Student)
     const initialType = searchParams.get('type') === 'personal';
     const [isPersonal, setIsPersonal] = useState(initialType);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isContentVisible, setIsContentVisible] = useState(true);
 
     // Sync state with URL when it changes (e.g. back button)
     useEffect(() => {
@@ -30,30 +32,48 @@ function AuthLayoutContent({ mode, title, linkText, linkUrl, linkLabel }: AuthLa
     }, [searchParams]);
 
     const handleUserTypeChange = (newIsPersonal: boolean) => {
-        setIsPersonal(newIsPersonal);
-        const params = new URLSearchParams(searchParams);
-        if (newIsPersonal) {
-            params.set('type', 'personal');
-        } else {
-            params.delete('type');
-        }
-        router.replace(`${pathname}?${params.toString()}`);
+        // 1. Fade Out
+        setIsContentVisible(false);
+
+        setTimeout(() => {
+            // 2. Expand
+            setIsExpanded(true);
+
+            setTimeout(() => {
+                // 3. Switch State
+                setIsPersonal(newIsPersonal);
+                const params = new URLSearchParams(searchParams);
+                if (newIsPersonal) {
+                    params.set('type', 'personal');
+                } else {
+                    params.delete('type');
+                }
+                router.replace(`${pathname}?${params.toString()}`);
+
+                // 4. Shrink (after a brief hold to ensure full coverage is perceived)
+                setTimeout(() => {
+                    setIsExpanded(false);
+
+                    setTimeout(() => {
+                        // 5. Fade In
+                        setIsContentVisible(true);
+                    }, 500); // Wait for shrink (duration-500)
+                }, 50);
+            }, 500); // Wait for expand (duration-500)
+        }, 200); // Wait for fade out (duration-200)
     };
 
     // Construct link URL preserving current type
     const getLinkUrl = () => {
         const params = new URLSearchParams(searchParams);
-        // We don't need to set type here because we want to preserve what's in searchParams
-        // But if searchParams is empty, it stays empty.
-        // If type is personal, it stays personal.
         return `${linkUrl}?${params.toString()}`;
     };
 
     return (
         <main className="flex min-h-screen w-full relative overflow-hidden bg-white">
-            {/* Banner Section */}
+            {/* Banner Section (Color Part) - z-10 (Behind) */}
             <div
-                className={`absolute top-0 bottom-0 w-1/2 flex items-center justify-center transition-all duration-700 ease-in-out z-20 ${isPersonal
+                className={`absolute top-0 bottom-0 w-1/2 flex items-center justify-center transition-all duration-700 cubic-bezier(0.68, -0.55, 0.265, 1.55) z-10 ${isPersonal
                     ? 'translate-x-[100%] bg-primary' // Personal: Right side, Yellow
                     : 'translate-x-0 bg-zinc-900'      // Student: Left side, Dark
                     }`}
@@ -79,15 +99,15 @@ function AuthLayoutContent({ mode, title, linkText, linkUrl, linkLabel }: AuthLa
                 </div>
             </div>
 
-            {/* Form Section */}
+            {/* Form Section (White Part) - z-20 (Front) */}
             <div
-                className={`absolute top-0 bottom-0 w-1/2 flex items-center justify-center p-8 transition-all duration-700 ease-in-out z-10 ${isPersonal
-                    ? 'translate-x-0'      // Personal: Left side
-                    : 'translate-x-[100%]' // Student: Right side
+                className={`absolute top-0 bottom-0 flex items-center justify-center p-8 transition-all duration-500 ease-in-out z-20 bg-white ${isExpanded ? 'w-full translate-x-0' : 'w-1/2'
+                    } ${!isExpanded && isPersonal ? 'translate-x-0' : ''
+                    } ${!isExpanded && !isPersonal ? 'translate-x-[100%]' : ''
                     }`}
             >
-                <div className="w-full max-w-md space-y-8">
-                    {/* Mobile Logo (only visible on small screens, though this layout is mainly for desktop) */}
+                <div className={`w-full max-w-md space-y-8 transition-opacity duration-200 ${isContentVisible ? 'opacity-100' : 'opacity-0'}`}>
+                    {/* Mobile Logo */}
                     <div className="text-center lg:hidden mb-8">
                         <div className="inline-flex w-20 h-20 border-4 border-primary rounded-2xl items-center justify-center mb-4">
                             <Dumbbell className="w-12 h-12 text-primary" />
@@ -95,6 +115,7 @@ function AuthLayoutContent({ mode, title, linkText, linkUrl, linkLabel }: AuthLa
                         <h1 className="text-2xl font-bold text-primary tracking-widest">HELP FIT</h1>
                     </div>
 
+                    {/* Content */}
                     <div className="bg-white p-8">
                         <h2 className="text-2xl font-bold text-primary mb-6 text-center">{title}</h2>
 

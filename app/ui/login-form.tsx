@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { authenticate, register } from '@/lib/actions';
 import { AtSymbolIcon, KeyIcon, ExclamationCircleIcon, UserIcon, PhoneIcon, IdentificationIcon } from '@heroicons/react/24/outline';
@@ -21,6 +21,20 @@ export default function LoginForm({
 
     const [phone, setPhone] = useState('');
     const [cref, setCref] = useState('');
+
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    // Sync server state message to local state
+    useEffect(() => {
+        if (state.message) {
+            setErrorMessage(state.message);
+        }
+    }, [state.message]);
+
+    // Clear error when user type changes
+    useEffect(() => {
+        setErrorMessage(null);
+    }, [userType]);
 
     const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         let value = e.target.value.replace(/\D/g, '');
@@ -302,14 +316,14 @@ export default function LoginForm({
                     <UserTypeToggle isPersonal={userType} onToggle={onUserTypeChange} />
 
                     <div
-                        className="flex h-8 items-end space-x-1"
+                        className="flex h-8 items-end space-x-1 mt-4"
                         aria-live="polite"
                         aria-atomic="true"
                     >
-                        {state.message && Object.keys(state.errors || {}).length === 0 && (
+                        {errorMessage && Object.keys(state.errors || {}).length === 0 && (
                             <>
                                 <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-                                <p className="text-sm text-red-500">{state.message}</p>
+                                <p className="text-sm text-red-500">{errorMessage}</p>
                             </>
                         )}
                     </div>

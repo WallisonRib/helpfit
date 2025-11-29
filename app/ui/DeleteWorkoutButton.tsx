@@ -40,7 +40,7 @@ export function DeleteWorkoutButton({ workoutId }: { workoutId: string }) {
             <button
                 onClick={handleDeleteClick}
                 disabled={isDeleting}
-                className="absolute bottom-4 right-4 p-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors z-10"
+                className="absolute bottom-4 right-4 p-2 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-colors z-10 cursor-pointer"
                 title="Excluir treino"
             >
                 {isDeleting ? (
@@ -62,14 +62,14 @@ export function DeleteWorkoutButton({ workoutId }: { workoutId: string }) {
                         <div className="flex justify-end gap-3">
                             <button
                                 onClick={handleCancel}
-                                className="px-4 py-2 rounded-lg bg-zinc-800 text-white hover:bg-zinc-700 transition-colors font-medium"
+                                className="px-4 py-2 rounded-lg bg-zinc-800 text-white hover:bg-zinc-700 transition-colors font-medium cursor-pointer"
                             >
                                 Não
                             </button>
                             <button
                                 onClick={handleConfirm}
                                 disabled={isDeleting}
-                                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium flex items-center gap-2"
+                                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors font-medium flex items-center gap-2 cursor-pointer"
                             >
                                 {isDeleting && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
                                 Sim

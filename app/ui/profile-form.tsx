@@ -219,7 +219,7 @@ export default function ProfileForm({ user, latestAssessment }: ProfileFormProps
                     <button
                         type="submit"
                         disabled={isPending}
-                        className="bg-primary text-black rounded-full p-2 hover:bg-primary/90 transition-colors disabled:opacity-50"
+                        className="bg-primary text-black rounded-full p-2 hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer"
                     >
                         {isPending ? (
                             <div className="h-6 w-6 animate-spin rounded-full border-2 border-black border-t-transparent"></div>

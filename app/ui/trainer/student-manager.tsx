@@ -14,7 +14,7 @@ export default function StudentManager() {
                 <button
                     onClick={() => setActiveTab('create')}
                     className={cn(
-                        "flex-1 py-2 text-sm font-medium rounded-md transition-all",
+                        "flex-1 py-2 text-sm font-medium rounded-md transition-all cursor-pointer",
                         activeTab === 'create'
                             ? "bg-zinc-800 text-white shadow-sm"
                             : "text-zinc-400 hover:text-zinc-200"
@@ -25,7 +25,7 @@ export default function StudentManager() {
                 <button
                     onClick={() => setActiveTab('existing')}
                     className={cn(
-                        "flex-1 py-2 text-sm font-medium rounded-md transition-all",
+                        "flex-1 py-2 text-sm font-medium rounded-md transition-all cursor-pointer",
                         activeTab === 'existing'
                             ? "bg-zinc-800 text-white shadow-sm"
                             : "text-zinc-400 hover:text-zinc-200"

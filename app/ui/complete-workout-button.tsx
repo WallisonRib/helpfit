@@ -6,40 +6,39 @@ import { completeWorkout } from '@/lib/actions';
 
 export function CompleteWorkoutButton({ workoutId }: { workoutId: string }) {
     const [isPending, startTransition] = useTransition();
-    const [completed, setCompleted] = useState(false);
+    const [isCompleted, setIsCompleted] = useState(false);
 
     const handleComplete = () => {
         startTransition(async () => {
             try {
                 await completeWorkout(workoutId);
-                setCompleted(true);
+                setIsCompleted(true);
             } catch (error) {
                 console.error('Failed to complete workout:', error);
             }
         });
     };
 
-    if (completed) {
-        return (
-            <div className="w-full bg-green-500/20 text-green-500 p-4 rounded-xl flex items-center justify-center gap-2 font-bold border border-green-500/50">
-                <Check className="w-6 h-6" />
-                Treino Concluído!
-            </div>
-        );
-    }
-
     return (
         <button
             onClick={handleComplete}
-            disabled={isPending}
-            className="w-full bg-primary text-black font-bold text-lg p-4 rounded-xl hover:bg-primary/90 transition-all active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            disabled={isPending || isCompleted}
+            className={`
+                w-full py-4 rounded-xl font-bold text-lg uppercase tracking-wider transition-all duration-300
+                flex items-center justify-center gap-2 cursor-pointer
+                ${isCompleted
+                    ? 'bg-green-500 text-white cursor-default'
+                    : 'bg-primary text-black hover:bg-primary/90 hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/20'
+                }
+                ${isPending ? 'opacity-70 cursor-not-allowed' : ''}
+            `}
         >
             {isPending ? (
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-black border-t-transparent" />
             ) : (
                 <>
                     <Check className="w-6 h-6" />
-                    Concluir Treino
+                    {isCompleted ? 'Treino Concluído!' : 'Concluir Treino'}
                 </>
             )}
         </button>

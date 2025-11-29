@@ -91,7 +91,7 @@ export default function AssessmentForm({ studentId }: { studentId: string }) {
                 </Link>
                 <button
                     type="submit"
-                    className="flex h-10 items-center rounded-lg bg-amber-500 px-4 text-sm font-medium text-white transition-colors hover:bg-amber-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500"
+                    className="flex h-10 items-center rounded-lg bg-amber-500 px-4 text-sm font-medium text-white transition-colors hover:bg-amber-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-500 cursor-pointer"
                 >
                     <CalculatorIcon className="mr-2 h-5 w-5" />
                     Calcular e Salvar

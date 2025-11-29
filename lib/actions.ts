@@ -397,6 +397,26 @@ export async function authenticate(
 ): Promise<State> {
   try {
     console.log('Attempting login...');
+
+    // Check if the user exists and has the correct role
+    const email = formData.get('email') as string;
+    const userType = formData.get('userType') as string;
+
+    if (email && userType) {
+      const user = await prisma.user.findUnique({ where: { email } });
+      if (user) {
+        const expectedRole = userType === 'personal' ? 'TRAINER' : 'STUDENT';
+        if (user.role !== expectedRole) {
+          return {
+            message: userType === 'personal'
+              ? 'Esta conta é de Aluno. Use a aba "Aluno" para entrar.'
+              : 'Esta conta é de Personal. Use a aba "Personal" para entrar.',
+            errors: {}
+          };
+        }
+      }
+    }
+
     const result = await signIn('credentials', { ...Object.fromEntries(formData), redirectTo: '/dashboard' });
     console.log('Login result:', result);
     return { message: null, errors: {} };

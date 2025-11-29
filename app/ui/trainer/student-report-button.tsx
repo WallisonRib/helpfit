@@ -97,7 +97,7 @@ export default function StudentReportButton({ student, assessments }: StudentRep
     return (
         <button
             onClick={generatePDF}
-            className="flex items-center gap-2 bg-zinc-800 text-white px-4 py-2 rounded-lg hover:bg-zinc-700 transition-colors text-sm font-medium border border-zinc-700"
+            className="flex items-center gap-2 bg-zinc-800 text-white px-4 py-2 rounded-lg hover:bg-zinc-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
             <FileText className="w-4 h-4" />
             Gerar Relatório
