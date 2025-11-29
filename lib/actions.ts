@@ -100,7 +100,11 @@ export async function updateProfile(prevState: State | undefined, formData: Form
   const { name, email, phone, address, age, height, weight, trainingLocation } = validatedFields.data;
   const session = await auth();
 
+  console.log('Update Profile - Session:', session?.user?.email);
+  console.log('Update Profile - Data:', validatedFields.data);
+
   if (!session?.user?.email) {
+    console.log('Update Profile - Not authenticated');
     return { message: 'Não autenticado', errors: {} };
   }
 
@@ -111,6 +115,7 @@ export async function updateProfile(prevState: State | undefined, formData: Form
         where: { email },
       });
       if (existingUser) {
+        console.log('Update Profile - Email taken');
         return {
           errors: { email: ['Este email já está em uso.'] },
           message: 'Erro ao atualizar perfil.',
@@ -118,7 +123,7 @@ export async function updateProfile(prevState: State | undefined, formData: Form
       }
     }
 
-    await prisma.user.update({
+    const updatedUser = await prisma.user.update({
       where: { email: session.user.email },
       data: {
         name,
@@ -129,8 +134,9 @@ export async function updateProfile(prevState: State | undefined, formData: Form
         height,
         weight,
         trainingLocation,
-      },
+      } as any,
     });
+    console.log('Update Profile - Success:', updatedUser);
 
     revalidatePath('/dashboard/profile');
     revalidatePath('/trainer/profile');
@@ -592,6 +598,31 @@ export async function addStudentToTrainer(studentId: string) {
 
   revalidatePath('/trainer');
   redirect('/trainer');
+}
+
+export async function completeWorkout(workoutId: string) {
+  const session = await auth();
+
+  if (!session?.user?.email) {
+    throw new Error('Não autenticado');
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!user) {
+    throw new Error('Usuário não encontrado');
+  }
+
+  await prisma.workoutLog.create({
+    data: {
+      studentId: user.id,
+      workoutId: workoutId,
+    },
+  });
+
+  revalidatePath('/dashboard');
 }
 
 

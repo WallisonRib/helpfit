@@ -24,6 +24,10 @@ export default async function DashboardPage() {
         redirect("/login");
     }
 
+    if (user.role === 'TRAINER') {
+        redirect("/trainer");
+    }
+
     // Map workouts to display
     // For now, we'll just list them. In a real app, we might map them to days of the week based on title or content.
     // Let's assume the title contains the day or we just list available workouts.

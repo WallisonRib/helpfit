@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { BackButton } from "@/components/BackButton";
 import { Dumbbell, Calendar, Repeat, Hash } from "lucide-react";
+import { CompleteWorkoutButton } from "@/app/ui/complete-workout-button";
 
 interface Exercise {
     name: string;
@@ -172,6 +173,10 @@ export default async function WorkoutViewPage({ params }: { params: Promise<{ id
                         )}
                     </div>
                 ))}
+            </div>
+
+            <div className="pt-8 pb-12">
+                <CompleteWorkoutButton workoutId={workout.id} />
             </div>
         </div>
     );
