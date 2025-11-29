@@ -29,10 +29,26 @@ export default async function DashboardPage() {
     // Let's assume the title contains the day or we just list available workouts.
     // If no workouts, we can show a placeholder or the static list as fallback for demo if needed, but goal is real data.
 
+    const weekDaysOrder = [
+        'Segunda', 'Segunda-feira',
+        'Terça', 'Terça-feira',
+        'Quarta', 'Quarta-feira',
+        'Quinta', 'Quinta-feira',
+        'Sexta', 'Sexta-feira',
+        'Sábado',
+        'Domingo'
+    ];
+
+    const getDayIndex = (title: string) => {
+        const lowerTitle = title.toLowerCase();
+        const index = weekDaysOrder.findIndex(day => lowerTitle.includes(day.toLowerCase()));
+        return index === -1 ? 999 : index;
+    };
+
     const workouts = user.workouts.length > 0 ? user.workouts.map(w => ({
         day: w.title, // Using title as the "Day" or name of workout
         id: w.id
-    })) : [];
+    })).sort((a, b) => getDayIndex(a.day) - getDayIndex(b.day)) : [];
 
     return (
         <div className="space-y-8">

@@ -50,7 +50,7 @@ export default function EditWorkoutForm({
                         type="text"
                         defaultValue={initialData.title}
                         placeholder="ex: Treino A"
-                        className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
+                        className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500 text-black"
                         required
                     />
                 </div>
@@ -75,7 +75,7 @@ export default function EditWorkoutForm({
                                         <input
                                             type="text"
                                             placeholder="Nome do Exercício"
-                                            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
+                                            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500 text-black"
                                             value={exercise.name}
                                             onChange={(e) => handleExerciseChange(index, 'name', e.target.value)}
                                             required
@@ -85,7 +85,7 @@ export default function EditWorkoutForm({
                                         <input
                                             type="text"
                                             placeholder="Séries"
-                                            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
+                                            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500 text-black"
                                             value={exercise.sets}
                                             onChange={(e) => handleExerciseChange(index, 'sets', e.target.value)}
                                             required
@@ -95,7 +95,7 @@ export default function EditWorkoutForm({
                                         <input
                                             type="text"
                                             placeholder="Repetições"
-                                            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500"
+                                            className="block w-full rounded-md border border-gray-200 py-2 px-3 text-sm outline-2 placeholder:text-gray-500 text-black"
                                             value={exercise.reps}
                                             onChange={(e) => handleExerciseChange(index, 'reps', e.target.value)}
                                             required

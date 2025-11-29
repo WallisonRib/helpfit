@@ -17,13 +17,15 @@ model User {
   password  String
   phone     String?
   cref      String?
+  address   String?
+  age       Int?
+  trainingLocation String?
   role      String   // "TRAINER" or "STUDENT"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // Relations
-  trainerId String?
-  trainer   User?   @relation("TrainerStudents", fields: [trainerId], references: [id])
+  trainers  User[]  @relation("TrainerStudents")
   students  User[]  @relation("TrainerStudents")
 
   assessments Assessment[]

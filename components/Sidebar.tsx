@@ -2,19 +2,22 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Dumbbell, ClipboardList, User, Headphones, Home, Users } from "lucide-react";
+import { Dumbbell, ClipboardList, User, Headphones, Home, Users, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { logout } from "@/lib/actions";
 
 const studentNavItems = [
     { name: "Treino", href: "/dashboard", icon: Dumbbell },
     { name: "Avaliação", href: "/dashboard/assessment", icon: ClipboardList },
+    { name: "Treinadores", href: "/dashboard/trainers", icon: Users },
     { name: "Perfil", href: "/dashboard/profile", icon: User },
     { name: "Suporte", href: "/dashboard/support", icon: Headphones },
 ];
 
 const trainerNavItems = [
-    { name: "Alunos", href: "/trainer", icon: Users },
-    // Add more trainer items if needed
+    { name: "Dashboard", href: "/trainer", icon: Home },
+    { name: "Alunos", href: "/trainer/students", icon: Users },
+    { name: "Perfil", href: "/trainer/profile", icon: User },
 ];
 
 interface SidebarProps {
@@ -53,6 +56,16 @@ export function Sidebar({ role }: SidebarProps) {
                     );
                 })}
             </nav>
+
+            <div className="mt-auto w-full px-2">
+                <button
+                    onClick={() => logout()}
+                    className="flex flex-col items-center justify-center p-3 rounded-xl transition-all group w-full text-zinc-400 hover:bg-zinc-800 hover:text-red-500"
+                >
+                    <LogOut className="w-6 h-6 mb-1 stroke-[2px]" />
+                    <span className="text-[10px] font-medium">Sair</span>
+                </button>
+            </div>
         </aside>
     );
 }

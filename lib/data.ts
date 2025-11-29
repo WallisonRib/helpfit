@@ -28,10 +28,28 @@ export async function getStudent(id: string) {
       },
     },
   });
-  
+
   // Security check: ensure student belongs to trainer
-  // In a real app, we'd check the relation more strictly
-  
+  const trainer = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!trainer) return null;
+
+  // Check if the student is in the trainer's list
+  const isStudent = await prisma.user.findFirst({
+    where: {
+      id,
+      trainers: {
+        some: {
+          id: trainer.id,
+        },
+      },
+    },
+  });
+
+  if (!isStudent) return null;
+
   return student;
 }
 

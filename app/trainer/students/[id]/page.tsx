@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { BackButton } from '@/components/BackButton';
 import { Dumbbell, Plus, Calendar } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import { DeleteWorkoutButton } from '@/app/ui/DeleteWorkoutButton';
 
 const DAYS_OF_WEEK = [
     "Segunda-Feira",
@@ -52,38 +53,40 @@ export default async function StudentDetailsPage({ params }: { params: Promise<{
                     {DAYS_OF_WEEK.map((day) => {
                         const workout = workouts.find(w => w.title === day);
                         return (
-                            <Link
-                                key={day}
-                                href={`/trainer/students/${student.id}/workouts/${encodeURIComponent(day)}/edit`}
-                                className={`
-                                    relative p-6 rounded-2xl border transition-all hover:scale-[1.02] group
-                                    ${workout
-                                        ? 'bg-zinc-900 border-primary/50 hover:border-primary'
-                                        : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700'
-                                    }
-                                `}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <span className={`text-lg font-bold ${workout ? 'text-white' : 'text-zinc-500'}`}>
-                                        {day}
-                                    </span>
-                                    {workout && <Dumbbell className="w-5 h-5 text-primary" />}
-                                </div>
+                            <div key={day} className="relative group">
+                                <Link
+                                    href={`/trainer/students/${student.id}/workouts/${encodeURIComponent(day)}/edit`}
+                                    className={`
+                                        block p-6 rounded-2xl border transition-all hover:scale-[1.02]
+                                        ${workout
+                                            ? 'bg-zinc-900 border-primary/50 hover:border-primary'
+                                            : 'bg-zinc-900/50 border-zinc-800 hover:border-zinc-700'
+                                        }
+                                    `}
+                                >
+                                    <div className="flex justify-between items-start mb-4">
+                                        <span className={`text-lg font-bold ${workout ? 'text-white' : 'text-zinc-500'}`}>
+                                            {day}
+                                        </span>
+                                        {workout && <Dumbbell className="w-5 h-5 text-primary" />}
+                                    </div>
 
-                                <div className="min-h-[60px] flex items-center">
-                                    {workout ? (
-                                        <div className="text-sm text-zinc-300">
-                                            <span className="block font-medium text-primary mb-1">Treino Definido</span>
-                                            <span className="text-xs text-zinc-500">Clique para editar</span>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2 text-zinc-600 group-hover:text-primary transition-colors">
-                                            <Plus className="w-5 h-5" />
-                                            <span className="font-medium">Adicionar Treino</span>
-                                        </div>
-                                    )}
-                                </div>
-                            </Link>
+                                    <div className="min-h-[60px] flex items-center">
+                                        {workout ? (
+                                            <div className="text-sm text-zinc-300">
+                                                <span className="block font-medium text-primary mb-1">Treino Definido</span>
+                                                <span className="text-xs text-zinc-500">Clique para editar</span>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center gap-2 text-zinc-600 group-hover:text-primary transition-colors">
+                                                <Plus className="w-5 h-5" />
+                                                <span className="font-medium">Adicionar Treino</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </Link>
+                                {workout && <DeleteWorkoutButton workoutId={workout.id} />}
+                            </div>
                         );
                     })}
                 </div>

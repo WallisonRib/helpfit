@@ -3,6 +3,8 @@ import { getStudent } from '@/lib/data';
 import { notFound } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 
+import { BackButton } from '@/components/BackButton';
+
 export default async function EditWorkoutPage({ params }: { params: Promise<{ id: string; day: string }> }) {
     const { id, day } = await params;
     const decodedDay = decodeURIComponent(day);
@@ -22,6 +24,9 @@ export default async function EditWorkoutPage({ params }: { params: Promise<{ id
 
     return (
         <div className="w-full">
+            <div className="mb-6">
+                <BackButton href={`/trainer/students/${id}`} />
+            </div>
             <div className="flex w-full items-center justify-between mb-8">
                 <div>
                     <h1 className="text-2xl font-bold">{decodedDay}</h1>

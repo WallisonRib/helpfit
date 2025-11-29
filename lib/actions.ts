@@ -1,6 +1,6 @@
 'use server';
 
-import { signIn } from '@/lib/auth';
+import { signIn, signOut } from '@/lib/auth';
 import { AuthError } from 'next-auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
@@ -415,5 +415,169 @@ export async function register(
       }
     }
     throw error;
+  }
+}
+
+export async function deleteWorkout(workoutId: string) {
+  try {
+    await prisma.workout.delete({
+      where: {
+        id: workoutId,
+      },
+    });
+    revalidatePath('/trainer/students/[id]');
+  } catch (error) {
+    console.error('Database Error:', error);
+    throw new Error('Failed to delete workout.');
+  }
+}
+
+export async function logout() {
+  await signOut();
+}
+
+export async function searchStudents(query: string) {
+  const session = await auth();
+  if (session?.user?.role !== 'TRAINER') {
+    throw new Error('Unauthorized');
+  }
+
+  if (!query || query.length < 2) {
+    return [];
+  }
+
+  const students = await prisma.user.findMany({
+    where: {
+      role: 'STUDENT',
+      OR: [
+        { name: { contains: query } },
+        { email: { contains: query } },
+      ],
+    },
+    take: 5,
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      trainers: {
+        select: {
+          id: true,
+        }
+      }
+    },
+  });
+
+  // Map to include a flag if the current trainer is already linked
+  // We need the current trainer's ID
+  const trainer = await prisma.user.findUnique({
+    where: { email: session.user.email! },
+    select: { id: true }
+  });
+
+  return students.map(s => ({
+    ...s,
+    isLinked: s.trainers.some(t => t.id === trainer?.id),
+    hasTrainers: s.trainers.length > 0,
+    trainerId: null // Deprecated
+  }));
+}
+
+export async function addStudentToTrainer(studentId: string) {
+  const session = await auth();
+  if (session?.user?.role !== 'TRAINER' || !session.user.email) {
+    throw new Error('Unauthorized');
+  }
+
+  // Get trainer ID
+  const trainer = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!trainer) {
+    throw new Error('Trainer not found');
+  }
+
+  await prisma.user.update({
+    where: { id: studentId },
+    data: {
+      trainers: {
+        connect: {
+          id: trainer.id,
+        },
+      },
+    },
+  });
+
+  revalidatePath('/trainer');
+  redirect('/trainer');
+}
+
+const UpdateProfileSchema = z.object({
+  name: z.string().min(1, 'Nome é obrigatório'),
+  email: z.string().email('Email inválido'),
+  phone: z.string().optional(),
+  address: z.string().optional(),
+  age: z.coerce.number().optional(),
+  trainingLocation: z.string().optional(),
+});
+
+export async function updateProfile(prevState: State | undefined, formData: FormData): Promise<State> {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return { message: 'Unauthorized', errors: {} };
+  }
+
+  const validatedFields = UpdateProfileSchema.safeParse({
+    name: formData.get('name'),
+    email: formData.get('email'),
+    phone: formData.get('phone'),
+    address: formData.get('address'),
+    age: formData.get('age'),
+    trainingLocation: formData.get('trainingLocation'),
+  });
+
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Dados inválidos.',
+    };
+  }
+
+  const { name, email, phone, address, age, trainingLocation } = validatedFields.data;
+
+  try {
+    // Check if email is being changed and if it's already taken
+    if (email !== session.user.email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingUser) {
+        return {
+          errors: { email: ['Este email já está em uso.'] },
+          message: 'Erro ao atualizar perfil.',
+        };
+      }
+    }
+
+    await prisma.user.update({
+      where: { email: session.user.email },
+      data: {
+        name,
+        email,
+        phone,
+        address,
+        age,
+        trainingLocation,
+      },
+    });
+
+    revalidatePath('/dashboard/profile');
+    revalidatePath('/trainer/profile');
+    return { message: 'Perfil atualizado com sucesso!', errors: {} };
+  } catch (error) {
+    return {
+      message: 'Erro no banco de dados: Falha ao atualizar perfil.',
+      errors: {},
+    };
   }
 }

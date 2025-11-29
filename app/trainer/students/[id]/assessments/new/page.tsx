@@ -13,7 +13,7 @@ export default async function NewAssessmentPage({ params }: { params: Promise<{ 
     return (
         <div className="w-full">
             <div className="flex w-full items-center justify-between">
-                <h1 className="text-2xl font-bold">New Assessment: {student.name}</h1>
+                <h1 className="text-2xl font-bold">Nova Avaliação: {student.name}</h1>
             </div>
             <div className="mt-6">
                 <AssessmentForm studentId={student.id} />
