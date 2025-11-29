@@ -94,7 +94,7 @@ function AuthLayoutContent({ mode, title, linkText, linkUrl, linkLabel }: AuthLa
                     </div>
                     <h1 className={`text-4xl font-bold tracking-widest transition-colors duration-700 ${isPersonal ? 'text-black' : 'text-primary'
                         }`}>
-                        HELP FIT
+                        HELPFIT
                     </h1>
                 </div>
             </div>
@@ -112,7 +112,7 @@ function AuthLayoutContent({ mode, title, linkText, linkUrl, linkLabel }: AuthLa
                         <div className="inline-flex w-20 h-20 border-4 border-primary rounded-2xl items-center justify-center mb-4">
                             <Dumbbell className="w-12 h-12 text-primary" />
                         </div>
-                        <h1 className="text-2xl font-bold text-primary tracking-widest">HELP FIT</h1>
+                        <h1 className="text-2xl font-bold text-primary tracking-widest">HELPFIT</h1>
                     </div>
 
                     {/* Content */}
