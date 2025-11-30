@@ -1,13 +1,20 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import Google from 'next-auth/providers/google';
+import Facebook from 'next-auth/providers/facebook';
 import { authConfig } from '@/auth.config';
 import { z } from 'zod';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
+import { PrismaAdapter } from '@auth/prisma-adapter';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
+  adapter: PrismaAdapter(prisma) as any,
+  session: { strategy: 'jwt' },
   providers: [
+    Google,
+    Facebook,
     Credentials({
       async authorize(credentials) {
         const parsedCredentials = z
@@ -17,8 +24,8 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
         if (parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
           const user = await prisma.user.findUnique({ where: { email } });
-          if (!user) return null;
-          
+          if (!user || !user.password) return null;
+
           const passwordsMatch = await bcrypt.compare(password, user.password);
 
           if (passwordsMatch) return user;

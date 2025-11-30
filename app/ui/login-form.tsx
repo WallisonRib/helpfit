@@ -330,7 +330,7 @@ export default function LoginForm({
                 </div>
             </form>
             <div className="px-6 pb-4">
-                <SocialLogin />
+                <SocialLogin mode={mode} />
             </div>
         </div>
     );

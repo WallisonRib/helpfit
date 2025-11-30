@@ -51,12 +51,13 @@ export async function createStudent(prevState: State, formData: FormData): Promi
         email,
         password: hashedPassword,
         role: 'STUDENT',
-        trainer: {
+        trainers: {
           connect: { email: session.user.email! },
         },
       },
     });
   } catch (error) {
+    console.error('Error creating student:', error);
     return {
       message: 'Erro no banco de dados: Falha ao criar aluno. Email já pode estar em uso.',
       errors: {},

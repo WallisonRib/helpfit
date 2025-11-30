@@ -11,28 +11,74 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
-  password  String
-  phone     String?
-  cref      String?  @unique
-  address   String?
-  age       Int?
-  height    Float?
-  weight    Float?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  phone         String?
+  cref          String?   @unique
+  address       String?
+  age           Int?
+  height        Float?
+  weight        Float?
   trainingLocation String?
-  role      String   // "TRAINER" or "STUDENT"
+  role          String    @default("STUDENT") // "TRAINER" or "STUDENT"
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  trainers      User[]    @relation("TrainerStudents")
+  students      User[]    @relation("TrainerStudents")
+
+  assessments   Assessment[]
+  workouts      Workout[]
+  logs          WorkoutLog[]
+  
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // Relations
-  trainers  User[]  @relation("TrainerStudents")
-  students  User[]  @relation("TrainerStudents")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  assessments Assessment[]
-  workouts    Workout[]
-  logs        WorkoutLog[]
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model Assessment {
